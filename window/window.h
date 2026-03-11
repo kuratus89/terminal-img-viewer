@@ -4,5 +4,6 @@
 #include "../storage/stora.h"
 
 extern std::stack<win> wino;
+void window();
 
 #endif

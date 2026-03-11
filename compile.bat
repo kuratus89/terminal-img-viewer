@@ -1,0 +1,1 @@
+g++ main.cpp window/window.cpp window/main_menu.cpp window/error.cpp storage/stora.cpp output/output.cpp input/input.cpp window/file_select.cpp -lcomdlg32
