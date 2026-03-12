@@ -3,6 +3,8 @@
 #include<iostream>
 #include "window.h"
 #include "error.h"
+#include "../output/output.h"
+#include "../input/input.h"
 
 
 std::string wchar_to_string(const wchar_t* c){
@@ -29,9 +31,21 @@ std::string open_dialog(const wchar_t* filter){
 
 
 void file_select(){
+    if(!wino.top().stb["initilize"]){
+        wino.top().stb["initilize"]=1;
+        wino.top().stb["print_screen"]=1;
+        wino.top().sts["print_screen"]= "fls";
+        std::string sho = "click space to select file";
+        initilize_screen(wino.top().screen["fls"] , sho.size() , 1 , " " , 0);
+        add_text_to_screen(sho , wino.top().screen["fls"] , 0,0,0,1);
+
+    }
+    int k = getkey();
+    if((!wino.top().stb["skip"])&&(k!=' '))return;
     std::string api = wino.top().sts["api"];
     std::string type = wino.top().sts["type"];
     wino.pop();
+
     const wchar_t* filter;
     if(api==""){
         error_push(wino.top().name , "api is not valid");
@@ -44,6 +58,8 @@ void file_select(){
         return;
     }
     std::string heu = open_dialog(filter);
+    
     wino.top().sts[api] = heu;
     wino.top().stb[api]=1;
+    
 }

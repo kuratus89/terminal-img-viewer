@@ -10,12 +10,12 @@ void init_console(){
     win temp;
     temp.name = "main_menu";
     wino.push(temp);
-    initilize_screen(pre_screen , 0,0," " , 0);
+    initilize_screen(pre_screen , 1,1," " , 0);
 }
 
 int main(){
     init_console();
-    std::cout<<"\033[?25l]";
+    std::cout<<"\033[?25l";
     while(gameon){
         window();
     }

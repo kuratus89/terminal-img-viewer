@@ -33,9 +33,21 @@ void add_text_to_screen(std::string s,std::vector<std::vector<pixel>> &scr , int
         else temp = 0;
     }
 }
-void compare_printer(std::vector<std::vector<pixel>> pre , std::vector<std::vector<pixel>> fro , std::string &s){
-    //not now
+
+std::string rgb_text(int r , int g , int b){
+    return ("\x1b[38;2;"+ std::to_string(r)+";"
+    + std::to_string(g) + ";"
+    + std::to_string(b) + "m");
 }
+
+std::string rgb_bg(int r , int g , int b){
+    return ("\x1b[48;2;"+
+    std::to_string(r)  + ";" +
+    std::to_string(g) + ";" +
+    std::to_string(b) + "m"
+    );
+}
+
 void bulk_printer(std::vector<std::vector<pixel>> &scr , std::string &s){
     for(auto vao:scr){
         for(auto val:vao){
@@ -52,10 +64,48 @@ void printer(std::vector<std::vector<pixel>> &scr){
     // if((pre_screen.size()&&scr.size())&&(pre_screen.size()==scr.size())&&(pre_screen[0].size()==scr[0].size())){
     // }
     bulk_printer(scr , print);
-    if((pre_screen.size()<scr.size())||(pre_screen[0].size()<scr[0].size())|| force_print)hard_clear();
-    else soft_clear();
+    if((pre_screen.size()<scr.size())&&(pre_screen[0].size()<scr[0].size()))soft_clear();
+    else hard_clear();
     std::cout<<print;
     pre_screen = scr;
     if(force_print)force_print=0;
 
+}
+
+void adv_bulk_printer(std::vector<std::vector<pixel>> &scr , std::string &s){
+    int h = scr.size();
+    std::string ch = "▀";
+    for(long long y = 0 ; y<h-1 ; y+=2){
+        for(long long x = 0 ; x<scr[y].size() ; x++){
+            
+            s+= rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
+            s+= rgb_bg(scr[y+1][x].r , scr[y+1][x].g , scr[y+1][x].b);
+            s+=ch;
+        }
+        s += "\x1b[0m";
+        s.push_back('\n');
+    }
+    if(h&1){
+        for(long long x = 0 ; x<scr[h-1].size(); x++){
+            
+            s+=rgb_text(scr[h-1][x].r , scr[h-1][x].g , scr[h-1][x].b);
+            s+=rgb_bg(0,0,0);
+            s+=ch;
+        }
+        
+        s += "\x1b[0m";
+        s.push_back('\n');
+    }
+
+
+}
+
+void adv_printer(std::vector<std::vector<pixel>> &scr){
+    if(pre_screen==scr)return;
+    std::string print;
+    adv_bulk_printer(scr , print);
+    if((pre_screen.size()<scr.size())&&(pre_screen[0].size()<scr[0].size()))soft_clear();
+    else hard_clear();
+    std::cout<<print;
+    pre_screen = scr;
 }

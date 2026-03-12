@@ -1,6 +1,17 @@
 #include "window.h"
 #include "../output/output.h"
 #include "../input/input.h"
+
+void load_img(){
+    win hio;
+    hio.name = "load_photo";
+    wino.push(hio);
+    hio.name = "file_select";
+    hio.sts["api"] = "img";
+    hio.sts["type"] = "photo";
+    wino.push(hio);
+}
+
 void main_menu(){
     if(!wino.top().stb["initilize"]){
         wino.top().stb["initilize"]=1;
@@ -21,11 +32,7 @@ void main_menu(){
     }
     int k = getkey();
     if(k=='w'){
-        win fl;
-        fl.name = "file_select";
-        fl.sts["api"] = "inp";
-        fl.sts["type"] = "photo";
-        wino.push(fl);
+        load_img();
         return;
     }
     

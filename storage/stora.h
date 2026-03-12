@@ -6,9 +6,12 @@
 
 struct pixel{
     std::string value;
+    // bool rgb=0;
+    int r=0,g=0,b=0;
     int color;
     bool operator==(const pixel& other)const{
-        return value == other.value && color == other.color;
+        // return value == other.value && color == other.color && r == other.r && g == other.g && b == other.b && rgb == other.rgb;
+        return value == other.value && color == other.color && r == other.r && g == other.g && b == other.b;
     }
 };
 
@@ -19,6 +22,7 @@ struct win{
     std::map<std::string , long long> stl;
     std::map<std::string , bool> stb;
     std::map<std::string , std::vector<std::vector<pixel>>> screen;
+    // bool adv_scr=0;
 };
 extern bool gameon;
 extern std::vector<std::vector<pixel>> pre_screen;
