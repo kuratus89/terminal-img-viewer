@@ -8,6 +8,10 @@
 #include "file_select.h"
 #include "load_photo.h"
 #include "screen_resize.h"
+#include "msg.h"
+#include "boot.h"
+#include "load_img.h"
+
 std::stack<win> wino;
 
 std::map<std::string , void(*)()> func_pointer = {
@@ -15,8 +19,10 @@ std::map<std::string , void(*)()> func_pointer = {
     {"main_menu" , main_menu},
     {"file_select" , file_select},
     {"load_photo" , load_photo},
-    {"screen_resize" , screen_resize}
-    
+    {"screen_resize" , screen_resize},
+    {"msg" , msg},
+    {"boot",  boot},
+    {"load_img" , load_img}
 };
 
 void crash_handler(){
@@ -39,6 +45,10 @@ void window(){
     func_pointer[wino.top().name]();
     crash_handler();
     if(wino.top().stb["print_screen"]){
+        if(!wino.top().screen.count(wino.top().sts["print_screen"])){
+            error_push("screen not found");
+        }
+
         if(wino.top().stb["adv"])adv_printer(wino.top().screen[wino.top().sts["print_screen"]]);
         else printer(wino.top().screen[wino.top().sts["print_screen"]]);
     }

@@ -48,13 +48,13 @@ void file_select(){
 
     const wchar_t* filter;
     if(api==""){
-        error_push(wino.top().name , "api is not valid");
+        error_push( "api is not valid");
         return;
     }
     if(type=="photo")filter = L"Photos (*.png;*.jpg;*.jpeg)\0*.png;*.jpg;*.jpeg\0All Files (*.*)\0*.*\0";
     else if(type=="video")filter = L"Video Files (*.mp4;*.mkv;*.avi;*.mov)\0*.mp4;*.mkv;*.avi;*.mov\0All Files (*.*)\0*.*\0";
     else {
-        error_push(wino.top().name , "format type is not valid");
+        error_push("format type is not valid");
         return;
     }
     std::string heu = open_dialog(filter);

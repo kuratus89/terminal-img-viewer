@@ -1,7 +1,7 @@
 #include "window.h"
 #include <vector>
 #include <fstream>
-#include <iostream>
+// #include <iostream>
 #include "error.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stb_image.h"
@@ -18,7 +18,7 @@ void load_photo(){
         }
         std::ifstream img_bin(wino.top().sts["img"] , std::ios::binary);
         if(!img_bin){
-            error_push(wino.top().name , "cannot open image!");
+            error_push( "cannot open image!");
             return;
         }
         img_bin.seekg(0,std::ios::end);
@@ -39,7 +39,7 @@ void load_photo(){
             3
         );
         if(!pixels){
-            error_push(wino.top().name , "image can't load");
+            error_push( "image can't load");
             return;
         }
         win te;
@@ -80,17 +80,31 @@ void load_photo(){
         int render_w = (int)(w / scale);
         int render_h = (int)(h / scale);
         
-        wino.top().screen["render"] = std::vector<std::vector<pixel>>(render_h, std::vector<pixel>(render_w));
-        for(int y = 0; y < render_h; y++){
-            for(int x = 0; x < render_w; x++){
-                int src_x = (int)(x * scale);
-                int src_y = (int)(y * scale);
-                int it = ((src_y * w) + src_x) * 3;
-                wino.top().screen["render"][y][x].r = pixels[it];
-                wino.top().screen["render"][y][x].g = pixels[it+1];
-                wino.top().screen["render"][y][x].b = pixels[it+2];
+        if((console_w<w)||(console_h<h)){
+            wino.top().screen["render"] = std::vector<std::vector<pixel>>(render_h, std::vector<pixel>(render_w));
+            for(int y = 0; y < render_h; y++){
+                for(int x = 0; x < render_w; x++){
+                    int src_x = (int)(x * scale);
+                    int src_y = (int)(y * scale);
+                    int it = ((src_y * w) + src_x) * 3;
+                    wino.top().screen["render"][y][x].r = pixels[it];
+                    wino.top().screen["render"][y][x].g = pixels[it+1];
+                    wino.top().screen["render"][y][x].b = pixels[it+2];
+                }
             }
         }
+        else {
+            wino.top().screen["render"] = std::vector<std::vector<pixel>> (h , std::vector<pixel> (w));
+            for(int y =0 ; y<h ; y++){
+                for(int x = 0 ; x<w ; x++){
+                    int it = ((y*w)+x)*3;
+                    wino.top().screen["render"][y][x].r = pixels[it];
+                    wino.top().screen["render"][y][x].g = pixels[it+1];
+                    wino.top().screen["render"][y][x].b = pixels[it+2];
+                }
+            }
+        }
+        free(pixels);
     }
     
 

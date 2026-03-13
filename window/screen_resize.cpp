@@ -12,7 +12,7 @@ bool get_console_size(int &w , int &h){
         // w = csbi.srWindow.Right - csbi.srWindow.Left;
         // h = csbi.srWindow.Bottom - csbi.srWindow.Top;
         w = csbi.dwSize.X-1;
-        h = csbi.dwSize.Y-1;
+        h= csbi.dwSize.Y-1;
         return 1;
     }
     return 0;
@@ -24,6 +24,7 @@ void screen_resize(){
         wino.top().stb["print_screen"]=1;
         wino.top().sts["print_screen"] = "juju";
         wino.top().stb["adv"]=1;
+        wino.top().stl["cn"]=2;
     }
     int w, h;
     get_console_size(w,h);
@@ -44,6 +45,26 @@ void screen_resize(){
         wino.top().stl["apiy"] = h;
         hard_clear();
         return;
+    }
+    if(wino.top().stl["cn"]>=0){
+        wino.top().stl["cn"]--;
+        if(!wino.top().stl["cn"]){
+            win ms;
+            ms.name = "msg";
+            ms.stl["color"]=0;
+            ms.stvs["msg"] = {
+                "instruction!",
+                "maximize your terminal window!",
+                "you can change your text size with 'ctrl +' and 'ctrl -' ",
+                "make text size small to make photo fit in your screen",
+                "if your screen is red then make the text small",
+                "once your screen is green then your photo can be rendered fully!"
+                "press space key to confirm and render photo",
+                "if you press space key while your screen is red then the photo will be scaled to fit in your screen!"
+            };
+            wino.push(ms);
+            return;
+        }
     }
     
     

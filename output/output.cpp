@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "../storage/stora.h"
+#include "../window/screen_resize.h"
 void hard_clear(){
     system("cls");
 }
@@ -11,6 +12,11 @@ void soft_clear(){
 }
 
 void initilize_screen(std::vector<std::vector<pixel>> &scr , int x , int y , std::string value , int color){
+    int w,h;
+    get_console_size(w,h);
+    if(x<=0)x =w;
+    if(y<=0)y =h;
+
     pixel pe;
     pe.value = value ;
     pe.color = color;
@@ -64,8 +70,8 @@ void printer(std::vector<std::vector<pixel>> &scr){
     // if((pre_screen.size()&&scr.size())&&(pre_screen.size()==scr.size())&&(pre_screen[0].size()==scr[0].size())){
     // }
     bulk_printer(scr , print);
-    if((pre_screen.size()<scr.size())&&(pre_screen[0].size()<scr[0].size()))soft_clear();
-    else hard_clear();
+    if((pre_screen.size()>scr.size())||(pre_screen[0].size()>scr[0].size()))hard_clear();
+    else soft_clear();
     std::cout<<print;
     pre_screen = scr;
     if(force_print)force_print=0;
@@ -100,12 +106,76 @@ void adv_bulk_printer(std::vector<std::vector<pixel>> &scr , std::string &s){
 
 }
 
-void adv_printer(std::vector<std::vector<pixel>> &scr){
+void adv_printer(std::vector<std::vector<pixel>> &scr ){
     if(pre_screen==scr)return;
     std::string print;
     adv_bulk_printer(scr , print);
-    if((pre_screen.size()<scr.size())&&(pre_screen[0].size()<scr[0].size()))soft_clear();
-    else hard_clear();
+    // if((pre_screen.size()>scr.size())||(pre_screen[0].size()>scr[0].size()))hard_clear();
+    // else soft_clear();
+    hard_clear();
     std::cout<<print;
     pre_screen = scr;
+}
+
+// void hud_window(std::vector<std::vector<pixel>> &main , std::vector<std::vector<pixel>> &secondary , int x , int y){
+//     if(x<0)x = (main[0].size()- secondary[0].size())/2;
+//     if(y<0)y = (main.size() - secondary.size())/2;
+//     for(int h=y ; h<secondary.size() ; h++){
+//         for(int w = x ; w<secondary[h].size() ; w++){
+//             main[h+y][w+x] = secondary[h][w];
+//         }
+//     }
+// }
+void hud_window(std::vector<std::vector<pixel>> &main,
+                std::vector<std::vector<pixel>> &secondary,
+                int x, int y)
+        {
+    if (main.empty()||main[0].empty()||secondary.empty()||secondary[0].empty())return;
+    int w,h;
+    get_console_size(w,h);
+    if(x<0)x=std::max(0,(w-(int)secondary[0].size())/2);
+    if(y<0)y=std::max(0,(h - (int)secondary.size())/2);
+
+    for (int sy = 0; sy < (int)secondary.size(); sy++) {
+        int my=y+sy;
+        if (my<0||my>=(int)main.size()) continue;
+        for (int sx=0;sx<(int)secondary[sy].size(); sx++) {
+            int mx=x+sx;
+            if(mx<0||mx>=(int)main[my].size()) continue;
+            main[my][mx] = secondary[sy][sx];
+        }
+    }
+}
+
+void add_boders(std::vector<std::vector<pixel>> &scr , int col){
+    pixel pe;
+    pe.color = col;
+    pe.value = "─";
+    for(long long i=1 ; i<scr[0].size()-1 ; i++){
+        scr[0][i] = pe;
+        scr[scr.size()-1][i]=pe;
+    }
+    pe.value = "|";
+    for(long long i=1 ; i<scr.size()-1 ; i++){
+        scr[i][0] = pe;
+        scr[i][scr[i].size()-1] = pe;
+    }
+    pe.value = "╭";
+    scr[0][0]=pe;
+    pe.value = "╯";
+    scr[scr.size()-1][scr[0].size()-1] = pe;
+    pe.value = "╮";
+    scr[0][scr[0].size()-1]= pe;
+    pe.value = "╰";
+    scr[scr.size()-1][0] = pe;
+    
+}
+
+void add_options(std::vector<std::vector<pixel>> &scr , std::vector<std::string> s , int selecter){
+    int y=0;
+    for(auto val:s){
+        if(y==selecter)add_text_to_screen("->"+ val , scr , 0 , y , 0 , 1);
+        else add_text_to_screen(" "+val , scr , 0 , y , 0 , 1);
+        y++;
+    }
 }

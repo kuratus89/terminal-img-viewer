@@ -22,9 +22,11 @@ struct win{
     std::map<std::string , long long> stl;
     std::map<std::string , bool> stb;
     std::map<std::string , std::vector<std::vector<pixel>>> screen;
+    std::map<std::string , std::vector<std::string>> stvs;
     // bool adv_scr=0;
 };
 extern bool gameon;
 extern std::vector<std::vector<pixel>> pre_screen;
 extern std::vector<std::string> color_pick_vec;
 extern bool force_print;
+extern bool debug;

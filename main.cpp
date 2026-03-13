@@ -8,7 +8,7 @@
 void init_console(){
     SetConsoleOutputCP(CP_UTF8);
     win temp;
-    temp.name = "main_menu";
+    temp.name = "boot";
     wino.push(temp);
     initilize_screen(pre_screen , 1,1," " , 0);
 }
