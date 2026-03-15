@@ -57,8 +57,8 @@ std::string rgb_bg(int r , int g , int b){
 void bulk_printer(std::vector<std::vector<pixel>> &scr , std::string &s){
     for(auto vao:scr){
         for(auto val:vao){
-            s+=val.value;
             s+=color_pick_vec[val.color];
+            s+=val.value;
         }
         s.push_back('\n');
     }
@@ -82,11 +82,24 @@ void adv_bulk_printer(std::vector<std::vector<pixel>> &scr , std::string &s){
     int h = scr.size();
     std::string ch = "▀";
     for(long long y = 0 ; y<h-1 ; y+=2){
-        for(long long x = 0 ; x<scr[y].size() ; x++){
+        int rt=-1 , gt=-1 , bt=-1;
+        int rb=-1 , gb =-1 , bb=-1;
             
-            s+= rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
-            s+= rgb_bg(scr[y+1][x].r , scr[y+1][x].g , scr[y+1][x].b);
+        for(long long x = 0 ; x<scr[y].size() ; x++){
+            if((rt!=scr[y][x].r)||(gt!=scr[y][x].g)||(bt==scr[y][x].b)){
+                s+= rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
+                rt = scr[y][x].r;
+                gt = scr[y][x].g;
+                bt = scr[y][x].b;
+            }
+            if((rb!=scr[y+1][x].r)||(gb!=scr[y+1][x].g)||(bb!=scr[y+1][x].b)){
+                s+= rgb_bg(scr[y+1][x].r , scr[y+1][x].g , scr[y+1][x].b);
+                rb = scr[y+1][x].r;
+                gb = scr[y+1][x].g;
+                bb = scr[y+1][x].b;
+            }
             s+=ch;
+
         }
         s += "\x1b[0m";
         s.push_back('\n');
@@ -106,13 +119,117 @@ void adv_bulk_printer(std::vector<std::vector<pixel>> &scr , std::string &s){
 
 }
 
+std::string move_cursor(int x , int y){
+    return ("\033["+std::to_string(y)+";"+std::to_string(x)+"H");
+}
+
+void comp_printer(std::vector<std::vector<pixel>> &scr ,std::vector<std::vector<pixel>> &pre , std::string &s ){
+    int h= scr.size();
+    std::string ch = "▀";
+    int rt=-1 , gt=-1 , bt=-1;
+    int rb=-1 , gb=-1 , bb=-1;
+    int cx=-1 , cy=-1;
+
+    for(int y=0 ; y<h-1 ; y+=2){
+        int ty= (y/2)+1;
+        for(int x=0 ; x<scr[y].size() ; x++){
+            int tx = x+1;
+            bool td=1;
+            if((y<pre.size()) &&(x<pre[y].size())){
+                td = !(scr[y][x]==pre[y][x]);
+            }
+            bool bd=1;
+            if((y+1<pre.size())&&(x<pre[y+1].size())){
+                bd = !(scr[y+1][x]==pre[y+1][x]);
+            }
+
+
+
+            if(td||bd){
+                if((cx!=tx)||(cy!=ty)){
+                    s+=move_cursor(tx , ty);
+                    cx = tx;
+                    cy=ty;
+                }
+
+                if((rt!=scr[y][x].r)||(gt!=scr[y][x].g)||(bt!=scr[y][x].b)){
+                    s += rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
+                    rt = scr[y][x].r;
+                    gt = scr[y][x].g;
+                    bt = scr[y][x].b;
+                }
+
+                if((rb!= scr[y+1][x].r)||(gb!=scr[y+1][x].g)||(bb!=scr[y+1][x].b)){
+                    s += rgb_bg(scr[y+1][x].r , scr[y+1][x].g , scr[y+1][x].b);
+                    rb = scr[y+1][x].r;
+                    gb = scr[y+1][x].g;
+                    bb = scr[y+1][x].b;
+                }
+                s+=ch;
+                cx++;
+            }
+            
+
+        }
+    }
+    if(h&1){
+        int y=h-1;
+        int ty= (y/2)+1;
+        for(int x=0 ; x<scr[y].size() ; x++){
+            int tx = x+1;
+            bool td = 1;
+            if((y < pre.size()) && (x < pre[y].size())){
+                td = !(scr[y][x] == pre[y][x]);
+            }
+            if(td){
+                if((cx!=tx)||(cy!=ty)){
+                    s+=move_cursor(tx, ty);
+                    cx = tx;
+                    cy = ty;
+                }
+                        
+                if((rt!=scr[y][x].r)||(gt!=scr[y][x].g)||(bt!=scr[y][x].b)){
+                    s+= rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
+                    rt = scr[y][x].r;
+                    gt = scr[y][x].g;
+                    bt = scr[y][x].b;
+                }
+
+                if((rb!=0)||(gb!=0) ||(bb!=0)){
+                    s+=rgb_bg(0 ,0 , 0);
+                    rb = 0;
+                    gb = 0;
+                    bb = 0;
+                }
+                s+=ch;
+                cx++;
+
+            }
+
+        }
+    }
+    if(cx!=-1){
+        s+="\x1b[0m";
+    }
+}
+
+
 void adv_printer(std::vector<std::vector<pixel>> &scr ){
     if(pre_screen==scr)return;
     std::string print;
-    adv_bulk_printer(scr , print);
-    // if((pre_screen.size()>scr.size())||(pre_screen[0].size()>scr[0].size()))hard_clear();
-    // else soft_clear();
-    hard_clear();
+    print.reserve(scr.size() * (scr[0].size() * 8 + 2));
+    // adv_bulk_printer(scr , print);
+    if((pre_screen.size()>scr.size())||(pre_screen[0].size()>scr[0].size())){
+        hard_clear();
+        adv_bulk_printer(scr , print);
+    }
+    else {
+        soft_clear();
+        // if((pre_screen.size()==scr.size())&&(pre_screen[0].size()==scr[0].size()))
+        comp_printer(scr , pre_screen , print);
+        // else adv_bulk_printer(scr , print);
+        
+    }
     std::cout<<print;
     pre_screen = scr;
 }
@@ -178,4 +295,23 @@ void add_options(std::vector<std::vector<pixel>> &scr , std::vector<std::string>
         else add_text_to_screen(" "+val , scr , 0 , y , 0 , 1);
         y++;
     }
+}
+
+void hud_printer(std::vector<std::vector<pixel>> &scr , int x , int y){
+    int a,b;
+    get_console_size(a,b);
+    if(x<=0)x = std::max(0,(int)(a - scr[0].size())/2);
+    if(y<=0)y = std::max(0 , (int)(b - scr.size())/2);
+    
+    std::string s;
+    for(int h=0 ; (h+y<=b)&&(h<scr.size()) ; h++){
+        s+=move_cursor(x,h+y);
+        for(int w =0 ; (w+x<=a)&&(w<scr[h].size()) ; w++){
+            s+=color_pick_vec[scr[h][w].color];
+            s+=scr[h][w].value;
+        }
+        s.push_back('\n');
+    }
+    soft_clear();
+    std::cout<<s;
 }

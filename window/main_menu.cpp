@@ -2,6 +2,7 @@
 #include "../output/output.h"
 #include "../input/input.h"
 #include "screen_resize.h"
+// #include <iostream>
 
 void load_img_win(std::string win_name){
     win hio;
@@ -11,6 +12,8 @@ void load_img_win(std::string win_name){
     hio.sts["api"] = "img";
     hio.sts["type"] = "photo";
     wino.push(hio);
+    // std::ios::sync_with_stdio(false);
+    // std::cin.tie(nullptr);
 }
 
 void build_options(){

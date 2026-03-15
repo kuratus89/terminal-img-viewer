@@ -9,8 +9,11 @@ void msg(){
     if(!wino.top().stb["initilize"]){
         wino.top().stb["initilize"]=1;
         wino.top().stb["print_screen"]=1;
-        wino.top().sts["print_screen"]="main";
-        wino.top().screen["main"] = pre_screen;
+        wino.top().sts["print_screen"]="msg";
+        // wino.top().screen["main"] = pre_screen;
+        wino.top().stb["hud"]=1;
+        wino.top().stl["hudx"]=-1;
+        wino.top().stl["hudy"]=-1;
         if(!wino.top().stvs.count("msg")){
             error_push("msg data not found");
             return;
@@ -29,8 +32,11 @@ void msg(){
             add_text_to_screen(val , wino.top().screen["msg"] , 1 , it , wino.top().stl["color"] , 1);
             it++;
         }
-        hud_window(wino.top().screen["main"] , wino.top().screen["msg"] , -1 , -1);
+        // hud_window(wino.top().screen["main"] , wino.top().screen["msg"] , -1 , -1);
     }
     int k = getkey();
-    if(k!=-1)wino.pop();
+    if(k!=-1){
+        wino.pop();
+        hard_clear();
+    }
 }

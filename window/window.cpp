@@ -48,8 +48,8 @@ void window(){
         if(!wino.top().screen.count(wino.top().sts["print_screen"])){
             error_push("screen not found");
         }
-
-        if(wino.top().stb["adv"])adv_printer(wino.top().screen[wino.top().sts["print_screen"]]);
+        if(wino.top().stb["hud"])hud_printer(wino.top().screen[wino.top().sts["print_screen"]] , wino.top().stl["hudx"] , wino.top().stl["hudy"]);
+        else if(wino.top().stb["adv"])adv_printer(wino.top().screen[wino.top().sts["print_screen"]]);
         else printer(wino.top().screen[wino.top().sts["print_screen"]]);
     }
 
