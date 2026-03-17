@@ -1,6 +1,8 @@
 #include <thread>
 #include <iostream>
 #include <vector>
+#include <thread>
+#include <mutex>
 #include "../storage/stora.h"
 #include "../window/screen_resize.h"
 void hard_clear(){
@@ -86,7 +88,7 @@ void adv_bulk_printer(std::vector<std::vector<pixel>> &scr , std::string &s){
         int rb=-1 , gb =-1 , bb=-1;
             
         for(long long x = 0 ; x<scr[y].size() ; x++){
-            if((rt!=scr[y][x].r)||(gt!=scr[y][x].g)||(bt==scr[y][x].b)){
+            if((rt!=scr[y][x].r)||(gt!=scr[y][x].g)||(bt!=scr[y][x].b)){
                 s+= rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
                 rt = scr[y][x].r;
                 gt = scr[y][x].g;
@@ -123,16 +125,16 @@ std::string move_cursor(int x , int y){
     return ("\033["+std::to_string(y)+";"+std::to_string(x)+"H");
 }
 
-void comp_printer(std::vector<std::vector<pixel>> &scr ,std::vector<std::vector<pixel>> &pre , std::string &s ){
-    int h= scr.size();
+void comp_printer(std::vector<std::vector<pixel>> &scr ,std::vector<std::vector<pixel>> &pre , std::string &s , int sx , int sy , int bx , int by ){
+    int h= std::min((int)scr.size() , by);
     std::string ch = "▀";
     int rt=-1 , gt=-1 , bt=-1;
     int rb=-1 , gb=-1 , bb=-1;
     int cx=-1 , cy=-1;
 
-    for(int y=0 ; y<h-1 ; y+=2){
-        int ty= (y/2)+1;
-        for(int x=0 ; x<scr[y].size() ; x++){
+    for(int y=sy ; y<h-1 ; y+=2){
+        int ty = (y/2)+1;
+        for(int x=sx ; x<std::min((int)scr[y].size() , bx)  ; x++){
             int tx = x+1;
             bool td=1;
             if((y<pre.size()) &&(x<pre[y].size())){
@@ -172,45 +174,63 @@ void comp_printer(std::vector<std::vector<pixel>> &scr ,std::vector<std::vector<
 
         }
     }
-    if(h&1){
-        int y=h-1;
-        int ty= (y/2)+1;
-        for(int x=0 ; x<scr[y].size() ; x++){
-            int tx = x+1;
-            bool td = 1;
-            if((y < pre.size()) && (x < pre[y].size())){
-                td = !(scr[y][x] == pre[y][x]);
-            }
-            if(td){
-                if((cx!=tx)||(cy!=ty)){
-                    s+=move_cursor(tx, ty);
-                    cx = tx;
-                    cy = ty;
-                }
+    // if(h&1){
+    //     int y=h-1;
+    //     int ty= (y/2)+1;
+    //     for(int x=0 ; x<scr[y].size() ; x++){
+    //         int tx = x+1;
+    //         bool td = 1;
+    //         if((y < pre.size()) && (x < pre[y].size())){
+    //             td = !(scr[y][x] == pre[y][x]);
+    //         }
+    //         if(td){
+    //             if((cx!=tx)||(cy!=ty)){
+    //                 s+=move_cursor(tx, ty);
+    //                 cx = tx;
+    //                 cy = ty;
+    //             }
                         
-                if((rt!=scr[y][x].r)||(gt!=scr[y][x].g)||(bt!=scr[y][x].b)){
-                    s+= rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
-                    rt = scr[y][x].r;
-                    gt = scr[y][x].g;
-                    bt = scr[y][x].b;
-                }
+    //             if((rt!=scr[y][x].r)||(gt!=scr[y][x].g)||(bt!=scr[y][x].b)){
+    //                 s+= rgb_text(scr[y][x].r , scr[y][x].g , scr[y][x].b);
+    //                 rt = scr[y][x].r;
+    //                 gt = scr[y][x].g;
+    //                 bt = scr[y][x].b;
+    //             }
 
-                if((rb!=0)||(gb!=0) ||(bb!=0)){
-                    s+=rgb_bg(0 ,0 , 0);
-                    rb = 0;
-                    gb = 0;
-                    bb = 0;
-                }
-                s+=ch;
-                cx++;
+    //             if((rb!=0)||(gb!=0) ||(bb!=0)){
+    //                 s+=rgb_bg(0 ,0 , 0);
+    //                 rb = 0;
+    //                 gb = 0;
+    //                 bb = 0;
+    //             }
+    //             s+=ch;
+    //             cx++;
 
-            }
+    //         }
 
-        }
-    }
+    //     }
+    // }
     if(cx!=-1){
         s+="\x1b[0m";
     }
+}
+
+void multi_threader(std::vector<std::vector<pixel>> &scr , std::string &s){
+    int cube_size =  300;
+    std::vector<std::thread> threads;
+    std::vector<std::string> vec (((scr.size()/cube_size)+1)*((scr[0].size()/cube_size)+1));
+    int id=0;
+    for(int y=0 ; y<scr.size() ; y+=cube_size){
+        for(int x=0 ; x<scr[y].size() ; x+=cube_size){
+            threads.emplace_back(comp_printer , std::ref(scr) , std::ref(pre_screen) , std::ref(vec[id]) , x , y , x+cube_size , y+cube_size);
+            id++;
+        }
+    }
+    for(auto &val : threads){
+        val.join();
+    }
+    for(auto val:vec)s+=val;
+
 }
 
 
@@ -225,11 +245,13 @@ void adv_printer(std::vector<std::vector<pixel>> &scr ){
     }
     else {
         soft_clear();
+        // hard_clear();
         // if((pre_screen.size()==scr.size())&&(pre_screen[0].size()==scr[0].size()))
-        comp_printer(scr , pre_screen , print);
+        multi_threader(scr , print);
         // else adv_bulk_printer(scr , print);
         
     }
+    
     std::cout<<print;
     pre_screen = scr;
 }

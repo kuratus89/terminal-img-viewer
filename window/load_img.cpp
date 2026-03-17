@@ -1,5 +1,6 @@
 #include "window.h"
 #include <vector>
+#include <thread>
 #include "error.h"
 #include "../stb_image.h"
 #include <fstream>
@@ -87,28 +88,11 @@ unsigned char* pixelv;
 //     }
 // }
 
-void render(){
-    int cw = wino.top().stl["x"];
-    int ch = wino.top().stl["y"];
-
-    int sw = wino.top().stl["w"];
-    int sh = wino.top().stl["h"];
-
-    float sx = (float)sw/(float)cw;
-    float sy = (float)sh/(float)ch;
-
-    float s = std::max(sx , sy);
-
-    int rw = (sw/s);
-    int rh = (sh/s);
-
-    if(rh<1)rh=1;
-    if(rw<1)rw=1;
-
-    wino.top().screen["render"] = std::vector<std::vector<pixel>> (rh , std::vector<pixel>(rw));
-
-    for(int y = 0 ; y<rh ; y++){
-        for(int x = 0 ; x<rw ; x++){
+void render(int tx , int ty , int bx , int by , int sw , int sh , float s){
+    
+    
+    for(int y = ty ; y<by ; y++){
+        for(int x = tx ; x<bx ; x++){
             int sx = (int)x*s;
             int sy = (int)y*s;
             if(sx<0)sx=0;
@@ -125,6 +109,38 @@ void render(){
         }
     }
 
+}
+
+void multi_th(){
+    int cube_size= 300;
+    int cw = wino.top().stl["x"];
+    int ch = wino.top().stl["y"];
+
+    int sw = wino.top().stl["w"];
+    int sh = wino.top().stl["h"];
+
+    float sx = (float)sw/(float)cw;
+    float sy = (float)sh/(float)ch;
+
+    float s = std::max(sx , sy);
+
+    int rw = (int)(sw/s);
+    int rh = (int)(sh/s);
+
+    if(rh<1)rh =1;
+    if(rw<1)rw = 1;
+
+    wino.top().screen["render"] = std::vector<std::vector<pixel>> (rh , std::vector<pixel>(rw));
+
+    std::vector<std::thread> threads;
+    for(int y=0 ; y<wino.top().stl["y"] ; y+=cube_size){
+        int by = std::min(y+cube_size , rh);
+        for(int x = 0 ; x<wino.top().stl["x"] ;x+=cube_size ){
+            int bx = std::min(x+cube_size , rw);
+            threads.emplace_back(render , x , y,  bx , by , sw , sh , s);
+        }
+    }
+    for(auto &val:threads)val.join();
 }
 
 
@@ -154,21 +170,18 @@ void load_img(){
         wino.top().stl["w"]=w;
         wino.top().stl["h"]=h;
         wino.top().stl["c"]=c;
-        int x,y;
-        get_console_size(x,y);
-        wino.top().stl["x"]=x;
-        wino.top().stl["y"]=y*2;
+        wino.top().stl["x"]=-1;
+        wino.top().stl["y"]=-1;
         wino.top().stb["print_screen"]=1;
         wino.top().sts["print_screen"]="render";
-        wino.top().stb["adv"]=1;
-        render();        
+        wino.top().stb["adv"]=1;       
     }
     int x,y;
     get_console_size(x,y);
     if((wino.top().stl["x"]!=x)||(wino.top().stl["y"]!=y*2)){
         wino.top().stl["x"]=x;
         wino.top().stl["y"]=y*2;
-        render();
+        multi_th();
     }
 
 }
