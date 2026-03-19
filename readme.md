@@ -48,4 +48,14 @@ i will explain in very short->
 - first i store all rgb values of all pixels of image use "stb image" library
 - then i print each pixel , how do i print pixels? ,  i use this character "▀" to print pixels i color the text to that of pixel and set the background color to pixel which is below this pixel ,so when i print "▀" the upper pixel color will be displayed due to text color but the lower pixel color will also be displayed due to background color , so i can print 2 pixels from 1 character
   
+
+# here are some screenshots and screenrecording
+![img1](https://github.com/kuratus89/terminal-img-viewer/tree/main/images/img1.png)
+![img2](https://github.com/kuratus89/terminal-img-viewer/tree/main/images/img2.png)
+![vid](https://github.com/kuratus89/terminal-img-viewer/tree/main/images/vid.mp4)
+
+
+
+
 if you want to ask about something or want to improve this program then please contact me in discord , [discord server link](https://discord.gg/PC8NWDr2Mv) 
+
