@@ -52,7 +52,11 @@ i will explain in very short->
 # here are some screenshots and screenrecording
 ![img1](images/img1.png)
 ![img2](images/img2.png)
-![vid](images/vid.mp4)
+
+
+https://github.com/user-attachments/assets/be2f67db-32e9-4a11-b2d5-d689a8cedff8
+
+
 
 
 
