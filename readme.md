@@ -29,6 +29,7 @@
 
 - i have used similar trick in [york](https://github.com/kuratus89/york)
 - this whole program runs on main loop in main.cpp
+- i implemented a uniqe way to manage windows , each window has its own screen and all window are being stored in a stack ! , and the top most window in stack will be loaded for output !
 
 ## how display system works? , how do i change the displayed text to some other text?
 
@@ -47,4 +48,4 @@ i will explain in very short->
 - first i store all rgb values of all pixels of image use "stb image" library
 - then i print each pixel , how do i print pixels? ,  i use this character "▀" to print pixels i color the text to that of pixel and set the background color to pixel which is below this pixel ,so when i print "▀" the upper pixel color will be displayed due to text color but the lower pixel color will also be displayed due to background color , so i can print 2 pixels from 1 character
   
-if you want to ask about something  ,please contact me in discord , [discord server link](https://discord.gg/PC8NWDr2Mv) 
+if you want to ask about something or want to improve this program then please contact me in discord , [discord server link](https://discord.gg/PC8NWDr2Mv) 
