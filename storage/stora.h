@@ -30,3 +30,6 @@ extern std::vector<std::vector<pixel>> pre_screen;
 extern std::vector<std::string> color_pick_vec;
 extern bool force_print;
 extern bool debug;
+extern int pcs;
+extern int rcs;
+extern bool diab;

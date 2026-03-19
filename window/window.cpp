@@ -11,6 +11,10 @@
 #include "msg.h"
 #include "boot.h"
 #include "load_img.h"
+#include "settings.h"
+#include "input.h"
+#include "diagnose.h"
+
 
 std::stack<win> wino;
 
@@ -22,7 +26,10 @@ std::map<std::string , void(*)()> func_pointer = {
     {"screen_resize" , screen_resize},
     {"msg" , msg},
     {"boot",  boot},
-    {"load_img" , load_img}
+    {"load_img" , load_img},
+    {"settings" , settings},
+    {"input" , input},
+    {"diagnose" , diagnose}
 };
 
 void crash_handler(){

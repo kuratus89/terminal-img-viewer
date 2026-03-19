@@ -37,6 +37,12 @@ void handle_inpt(){
     if(k==' '){
         if(wino.top().stl["selecter"]==0)load_img_win("load_photo");
         if(wino.top().stl["selecter"]==1)load_img_win("load_img");
+        if(wino.top().stl["selecter"]==2){
+            wino.top().stb["initilize"]=0;
+            win pe;
+            pe.name = "settings";
+            wino.push(pe);
+        }
     }
 }
 
@@ -55,9 +61,10 @@ void main_menu(){
         wino.top().stvs["options"] = {
             "image renderer",
             "image renderer v2",
-            "video renderer"
+            "settings"
         };
         build_options();
+        force_print=1;
     }
     handle_inpt();
       

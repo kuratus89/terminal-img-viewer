@@ -5,6 +5,8 @@
 #include <mutex>
 #include "../storage/stora.h"
 #include "../window/screen_resize.h"
+#include "../window/diagnose.h"
+
 void hard_clear(){
     system("cls");
 }
@@ -235,11 +237,11 @@ void multi_threader(std::vector<std::vector<pixel>> &scr , std::string &s){
 
 
 void adv_printer(std::vector<std::vector<pixel>> &scr ){
-    if(pre_screen==scr)return;
+    if((pre_screen==scr)&&(!force_print))return;
     std::string print;
     print.reserve(scr.size() * (scr[0].size() * 8 + 2));
     // adv_bulk_printer(scr , print);
-    if((pre_screen.size()>scr.size())||(pre_screen[0].size()>scr[0].size())){
+    if(pre_screen.empty()||((pre_screen.size()>scr.size())||(pre_screen[0].size()>scr[0].size()))){
         hard_clear();
         adv_bulk_printer(scr , print);
     }
@@ -254,6 +256,10 @@ void adv_printer(std::vector<std::vector<pixel>> &scr ){
     
     std::cout<<print;
     pre_screen = scr;
+    if(diab){
+        end_d();
+    }
+    if(force_print)force_print=0;
 }
 
 // void hud_window(std::vector<std::vector<pixel>> &main , std::vector<std::vector<pixel>> &secondary , int x , int y){

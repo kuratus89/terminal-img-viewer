@@ -4,7 +4,7 @@
 // #include <iostream>
 #include "error.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "../stb_image.h"
+#include "../lib/stb_image.h"
 
 std::vector<unsigned char> img;
 int h , w , c;

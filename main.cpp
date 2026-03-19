@@ -11,12 +11,15 @@ void init_console(){
     temp.name = "boot";
     wino.push(temp);
     initilize_screen(pre_screen , 1,1," " , 0);
+    std::cout<<"\033[?25l";
 }
 
 int main(){
     init_console();
-    std::cout<<"\033[?25l";
+    
     while(gameon){
         window();
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
+
 }

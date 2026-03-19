@@ -38,5 +38,6 @@ void msg(){
     if(k!=-1){
         wino.pop();
         hard_clear();
+        pre_screen.clear();
     }
 }

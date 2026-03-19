@@ -2,9 +2,10 @@
 #include <vector>
 #include <thread>
 #include "error.h"
-#include "../stb_image.h"
+#include "../lib/stb_image.h"
 #include <fstream>
 #include "screen_resize.h"
+#include "../storage/stora.h"
 #define STB_IMAGE_IMPLEMENTATION
 
 std::vector<unsigned char> imgv;
@@ -101,10 +102,16 @@ void render(int tx , int ty , int bx , int by , int sw , int sh , float s){
             if(sy>=sh)sy = sh-1;
 
             int it = ((sy*sw)+sx)*4;
-
-            wino.top().screen["render"][y][x].r = pixelv[it];
-            wino.top().screen["render"][y][x].g = pixelv[it+1];
-            wino.top().screen["render"][y][x].b = pixelv[it+2];
+            if(pixelv[it+3]>=128){
+                wino.top().screen["render"][y][x].r = pixelv[it];
+                wino.top().screen["render"][y][x].g = pixelv[it+1];
+                wino.top().screen["render"][y][x].b = pixelv[it+2];
+            }
+            else {
+                wino.top().screen["render"][y][x].r = 0;
+                wino.top().screen["render"][y][x].g =0;
+                wino.top().screen["render"][y][x].b = 0;
+            }
 
         }
     }
@@ -112,7 +119,7 @@ void render(int tx , int ty , int bx , int by , int sw , int sh , float s){
 }
 
 void multi_th(){
-    int cube_size= 300;
+    int cube_size= rcs;
     int cw = wino.top().stl["x"];
     int ch = wino.top().stl["y"];
 
@@ -145,8 +152,25 @@ void multi_th(){
 
 
 void load_img(){
+    if(wino.top().stb["msg"]){
+        wino.top().stb["msg"]=0;
+        win msg;
+        msg.name = "msg";
+        msg.stl["color"]=0;
+        msg.stvs["msg"] = {
+            "change text size to change image resolution",
+            "use 'ctrl +'/'ctrl -' to change text size",
+            "press any key to continue"
+        };
+        wino.push(msg);
+        wino.top().stl["x"]=-1;
+        wino.top().stl["y"]=-1;
+        return;
+        
+    }
     if(!wino.top().stb["initilize"]){
         wino.top().stb["initilize"]=1;
+        wino.top().stb["msg"]=1;
         if(wino.top().sts["img"]==""){
             wino.pop();
             return;
@@ -174,7 +198,7 @@ void load_img(){
         wino.top().stl["y"]=-1;
         wino.top().stb["print_screen"]=1;
         wino.top().sts["print_screen"]="render";
-        wino.top().stb["adv"]=1;       
+        wino.top().stb["adv"]=1;
     }
     int x,y;
     get_console_size(x,y);
@@ -183,5 +207,6 @@ void load_img(){
         wino.top().stl["y"]=y*2;
         multi_th();
     }
+    
 
 }

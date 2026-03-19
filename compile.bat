@@ -1,1 +1,1 @@
-g++ main.cpp window/window.cpp window/main_menu.cpp window/error.cpp storage/stora.cpp output/output.cpp input/input.cpp window/file_select.cpp window/load_photo.cpp window/screen_resize.cpp window/msg.cpp window/boot.cpp window/load_img.cpp -lcomdlg32
+g++ main.cpp window/window.cpp window/main_menu.cpp window/error.cpp storage/stora.cpp output/output.cpp input/input.cpp window/file_select.cpp window/load_photo.cpp window/screen_resize.cpp window/msg.cpp window/boot.cpp window/load_img.cpp window/settings.cpp window/input.cpp window/diagnose.cpp -lcomdlg32
