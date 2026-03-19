@@ -50,9 +50,9 @@ i will explain in very short->
   
 
 # here are some screenshots and screenrecording
-![img1](https://github.com/kuratus89/terminal-img-viewer/tree/main/images/img1.png)
-![img2](https://github.com/kuratus89/terminal-img-viewer/tree/main/images/img2.png)
-![vid](https://github.com/kuratus89/terminal-img-viewer/tree/main/images/vid.mp4)
+![img1](images/img1.png)
+![img2](images/img2.png)
+![vid](images/vid.mp4)
 
 
 
